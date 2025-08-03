@@ -58,7 +58,28 @@ export const AppContextProvider = ({ children }) => {
         setCartItems(cartData);
     }
 
-    const value = {navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, updateCartItem, removeCartItem, cartItems, searchQuery, setSearchQuery};
+    //get cart item count
+    const getCartCount = () => {
+        let totalCount = 0;
+        for (const key in cartItems) {
+            totalCount += cartItems[key];
+        }
+        return totalCount;
+    }
+
+    //get cart total price
+    const getCartAmount = () => {
+        let totalPrice = 0;
+        for (const key in cartItems) {
+            let itemInfo = products.find((product) => product._id === key);
+            if (cartItems[key]) {
+                totalPrice += itemInfo.offerPrice * cartItems[key];
+            }
+        }
+        return Math.floor(totalPrice * 100) / 100; // Round to two decimal places
+    }
+
+    const value = {navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, updateCartItem, removeCartItem, cartItems, searchQuery, setSearchQuery, getCartCount, getCartAmount};
     return <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
