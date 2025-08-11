@@ -5,12 +5,18 @@ import cors from 'cors';
 import connectDB from './configs/db.js';
 import userRouter from './routes/userRoute.js';
 import sellerRouter from './routes/sellerRoute.js';
+import connectCloudinary from './configs/cloudinary.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
-const allowedOrigins = ['http://localhost:5173'];
 
 await connectDB();
+await connectCloudinary();
+
+//allow multiple origin
+const allowedOrigins = ['http://localhost:5173'];
+
+
 
 //middleware configuration
 app.use(express.json());
