@@ -7,7 +7,7 @@ import { addProduct, changeStock, productById, productList } from '../controller
 const productRouter = express.Router();
 
 // Ensure auth runs first, then multer parses the files
-productRouter.post('/add', authSeller, upload.array('images', 6), addProduct);   // allow up to 6 files
+productRouter.post('/add', authSeller, upload.array(['images'], 6), addProduct);   // allow up to 6 files
 productRouter.get('/list', productList);
 productRouter.get('/id', productById);
 productRouter.post('/stock', authSeller, changeStock);

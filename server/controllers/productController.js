@@ -11,7 +11,9 @@ export const addProduct = async (req, res) => {
     console.log('Files:', req.files);
 
     let productData = JSON.parse(req.body.productData);
+    console.log('Parsed productData:', productData);
     const images = req.files;
+    console.log('Uploaded images:', images);
 
     if (!images || images.length === 0) {
       return res.status(400).json({ success: false, message: 'No images uploaded' });
@@ -19,8 +21,13 @@ export const addProduct = async (req, res) => {
 
     const imagesUrl = await Promise.all(
       images.map(async (image) => {
-        const result = await cloudinary.uploader.upload(image.path, { resource_type: 'image' });
-        return result.secure_url;
+        try {
+          const result = await cloudinary.uploader.upload(image.path, { resource_type: 'image' });
+          return result.secure_url;
+        } 
+        catch (error) {
+          return "failed"
+        }
       })
     );
 

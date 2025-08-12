@@ -45,7 +45,7 @@ const AddProduct = () => {
         setFiles([]);
         // navigate("/seller/product-list");
       } else {
-        toast.error(data.message || "Failed to add product");
+        setFiles([assets.image_failed, assets.image_failed, assets.image_failed, assets.image_failed]);
       }
     } catch (error) {
       console.error("Error adding product:", error);
