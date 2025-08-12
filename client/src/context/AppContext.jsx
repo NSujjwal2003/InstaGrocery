@@ -2,9 +2,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
-
+import axios from "axios";
+axios.defaults.withCredentials = true; // Enable sending cookies with api requests
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 export const AppContext = createContext();
-//waiter
 
 export const AppContextProvider = ({ children }) => {
     const currency = import.meta.env.VITE_CURRENCY;
@@ -16,11 +17,28 @@ export const AppContextProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
 
+    //fetch seller status
+    const fetchSellerStatus = async () => {
+        try {
+            const {data} = await axios.get('/api/seller/auth');
+            if(data.success) {
+                setIsSeller(true);
+            }
+            else{
+                setIsSeller(false);
+            }
+        } catch (error) {
+            setIsSeller(false);
+        }
+    }
+
+    //fetch all products
     const fetchProducts = async () => {
         setProducts(dummyProducts); 
     }
 
     useEffect(() => {
+        fetchSellerStatus();
         fetchProducts();
     }, []);
 
@@ -79,7 +97,7 @@ export const AppContextProvider = ({ children }) => {
         return Math.floor(totalPrice * 100) / 100; // Round to two decimal places
     }
 
-    const value = {navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, updateCartItem, removeCartItem, cartItems, searchQuery, setSearchQuery, getCartCount, getCartAmount};
+    const value = {navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, updateCartItem, removeCartItem, cartItems, searchQuery, setSearchQuery, getCartCount, getCartAmount, axios, fetchProducts};
     return <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
@@ -88,4 +106,4 @@ export const AppContextProvider = ({ children }) => {
 export const useAppContext = () => {
     return useContext(AppContext);
 }
-//calling the waiter
+
