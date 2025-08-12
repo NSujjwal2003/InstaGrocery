@@ -33,7 +33,7 @@ const AddProduct = () => {
       const { data } = await axios.post("/api/product/add", formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
-      });
+      }); 
 
       if (data.success) {
         toast.success("Product added successfully");
@@ -43,9 +43,8 @@ const AddProduct = () => {
         setPrice("");
         setOfferPrice("");
         setFiles([]);
-        // navigate("/seller/product-list");
       } else {
-        setFiles([assets.image_failed, assets.image_failed, assets.image_failed, assets.image_failed]);
+        toast.error(data.message || "Failed to add product");
       }
     } catch (error) {
       console.error("Error adding product:", error);

@@ -22,6 +22,19 @@ const Cart = () => {
         setCartArray(tempArray);
     }
 
+    const getUserAddress = async () => {
+        try {
+            const {data} = await axios.get('/api/address/get');
+            if(data.success) {
+                setAddresses(data.addresses);
+                if(data.addresses.length > 0) {
+                    setSelectedAddress(data.addresses[0]);
+                }
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
     const placeOrder = async () => {
 
     }

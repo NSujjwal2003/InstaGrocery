@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
 import axios from "axios";
 axios.defaults.withCredentials = true; // Enable sending cookies with api requests
@@ -32,15 +31,56 @@ export const AppContextProvider = ({ children }) => {
         }
     }
 
+    //fetch user auth status
+    const fetchUser = async () => {
+        try {
+            const {data} = await axios.get('api/user/auth');
+            if(data.success) {
+                setUser(data.user);
+                setCartItems(data.user.cartItems);
+            }
+        } catch (error) {
+            setUser(null);
+        }
+    }
+
     //fetch all products
     const fetchProducts = async () => {
-        setProducts(dummyProducts); 
+        try {
+            const {data} = await axios.get('/api/product/list');
+            if(data.success){
+                setProducts(data.products);
+            }
+            else{
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     useEffect(() => {
         fetchSellerStatus();
         fetchProducts();
+        fetchUser();
     }, []);
+
+    //update database cart items
+    useEffect(() => {
+        const updateCart = async() => {
+            try {
+                const {data} = await axios.post('/api/user/update', {cartItems});
+                if(!data.success){
+                    toast.error(data.message);
+                }
+            } catch (error) {
+                toast.error(error.message);
+            }
+        }
+        if(user) {
+            updateCart();
+        }
+    }, [cartItems])
 
     //add to cart function
     const addToCart = (ItemId) => {
@@ -97,7 +137,7 @@ export const AppContextProvider = ({ children }) => {
         return Math.floor(totalPrice * 100) / 100; // Round to two decimal places
     }
 
-    const value = {navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, updateCartItem, removeCartItem, cartItems, searchQuery, setSearchQuery, getCartCount, getCartAmount, axios, fetchProducts};
+    const value = {navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, updateCartItem, removeCartItem, cartItems, searchQuery, setSearchQuery, getCartCount, getCartAmount, axios, fetchProducts, fetchSellerStatus};
     return <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
